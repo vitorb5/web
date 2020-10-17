@@ -2,12 +2,13 @@
 //adaptar para o novo estatado
 import React, {useState} from 'react';
 import * as S from './styles'
+import api from '../../Services/api';
 
 //Nossos Componetes
 import Header from '../../Components/Header';
 import Footer from '../../Components/Footer';
 import FilterCard from '../../Components/FilterCard';
-import TaskCard from '../../Components/TaskCard'
+import TaskCard from '../../Components/TaskCard';
 
 function Home() {//O nome da função sempre será o nome da página
   const [filteActived, setFilterActived] = useState();
@@ -32,9 +33,24 @@ function Home() {//O nome da função sempre será o nome da página
             <FilterCard title="Ano"     actived={filteActived == 'year'}/>
           </button>
           </S.FilterArea>
-           <S.TaskCard>
-             
-           </S.TaskCard>
+
+          <S.Title>
+            <h3>Tarefas</h3>
+          </S.Title>
+
+          <S.Content>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+            <TaskCard/>
+          </S.Content>
+           
           <Footer/>
 
           </S.Container>
