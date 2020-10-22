@@ -1,6 +1,7 @@
 //useState ele avisa todos os componentes que certo estado mudou e os outros elementos mudam de cor para se 
 //adaptar para o novo estatado
-import React, {useState} from 'react';
+//useEffect é uma função que é carregada sempre que a tela é carregada
+import React, {useState, useEffect} from 'react';
 import * as S from './styles'
 import api from '../../Services/api';
 
@@ -11,10 +12,40 @@ import FilterCard from '../../Components/FilterCard';
 import TaskCard from '../../Components/TaskCard';
 
 function Home() {//O nome da função sempre será o nome da página
-  const [filteActived, setFilterActived] = useState();
+  const [filteActived, setFilterActived] = useState('all');
+  const [task, setTasks] = useState([]);
+  const [lateCount, setLateCount] = useState();
+
+  //setTasks é função que atualiza o status  
+  async function loadTask(){
+    await api.get(`/task/filter/${filteActived}/11:11:11:11:11:11`)
+    .then(response => {
+      setTasks(response.data)
+    })
+  }
+
+  async function lateVerify(){
+    await api.get(`/task/filter/late/11:11:11:11:11:11`)
+    .then(response => {
+      setLateCount(response.data.length)
+    })
+  }
+
+  //Não vai ser asincrona pois não envolve nada com api nem com banco
+  function Notification(){
+    setFilterActived('late');
+  }
+  
+  //Lembrando que o useEffect é carregado sempre um que é carregada nesse caso estou solicitando
+  //que ele carregue sempre a função loadTask sempre que a tela for carregada
+  useEffect(() =>{
+    loadTask();
+    lateVerify();
+  },[filteActived])
+  
   return (
           <S.Container>
-          <Header/>
+          <Header lateCount={lateCount} clickNotification={Notification}/>
           
           <S.FilterArea>
           <button type="button"         onClick={() => setFilterActived("all")}> 
@@ -35,20 +66,15 @@ function Home() {//O nome da função sempre será o nome da página
           </S.FilterArea>
 
           <S.Title>
-            <h3>Tarefas</h3>
+            <h3>{filteActived == 'late' ? 'Tarefas Atrasadas' : 'Tarefas'}</h3>
           </S.Title>
 
           <S.Content>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
-            <TaskCard/>
+            {
+              task.map(t =>(
+            <TaskCard type={t.type} title={t.title} when={t.when}/>
+              ))
+            }
           </S.Content>
            
           <Footer/>
